@@ -7,9 +7,10 @@ const Index = () => {
   const { data: playlists, isLoading, error } = useFeaturedPlaylists();
 
   if (error) {
+    const errorMessage = error instanceof Error ? error.message : "Failed to load playlists. Please try again later.";
     toast({
       title: "Error",
-      description: "Failed to load playlists. Please try again later.",
+      description: errorMessage,
       variant: "destructive",
     });
   }

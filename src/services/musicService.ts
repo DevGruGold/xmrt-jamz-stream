@@ -20,12 +20,51 @@ interface DeezerResponse {
 const DEEZER_API_BASE = "https://api.deezer.com";
 const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
 
+const handleApiError = (error: any) => {
+  if (error?.status === 403 && error?.body?.includes("/corsdemo")) {
+    throw new Error(
+      "CORS Proxy access not enabled. Please visit https://cors-anywhere.herokuapp.com/corsdemo and click 'Request temporary access'"
+    );
+  }
+  throw error;
+};
+
 export const searchTracks = async (query: string): Promise<Track[]> => {
-  const response = await fetch(
-    `${CORS_PROXY}${DEEZER_API_BASE}/search?q=${encodeURIComponent(query)}`
-  );
-  const data: DeezerResponse = await response.json();
-  return data.data;
+  try {
+    const response = await fetch(
+      `${CORS_PROXY}${DEEZER_API_BASE}/search?q=${encodeURIComponent(query)}`
+    );
+    if (!response.ok) {
+      throw {
+        status: response.status,
+        body: await response.text(),
+      };
+    }
+    const data: DeezerResponse = await response.json();
+    return data.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};
+
+export const getFeaturedPlaylists = async (): Promise<any[]> => {
+  try {
+    const response = await fetch(
+      `${CORS_PROXY}${DEEZER_API_BASE}/editorial/0/charts`
+    );
+    if (!response.ok) {
+      throw {
+        status: response.status,
+        body: await response.text(),
+      };
+    }
+    const data = await response.json();
+    return data.playlists?.data || [];
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
 };
 
 export const useSearchTracks = (query: string) => {
@@ -34,14 +73,6 @@ export const useSearchTracks = (query: string) => {
     queryFn: () => searchTracks(query),
     enabled: !!query,
   });
-};
-
-export const getFeaturedPlaylists = async (): Promise<any[]> => {
-  const response = await fetch(
-    `${CORS_PROXY}${DEEZER_API_BASE}/editorial/0/charts`
-  );
-  const data = await response.json();
-  return data.playlists?.data || [];
 };
 
 export const useFeaturedPlaylists = () => {
