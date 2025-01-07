@@ -1,48 +1,54 @@
 import Layout from '@/components/Layout';
-
-const featuredPlaylists = [
-  {
-    id: 1,
-    title: "Today's Top Hits",
-    description: "The biggest hits right now",
-    imageUrl: "/placeholder.svg"
-  },
-  {
-    id: 2,
-    title: "Discover Weekly",
-    description: "Your weekly mixtape of fresh music",
-    imageUrl: "/placeholder.svg"
-  },
-  {
-    id: 3,
-    title: "Chill Vibes",
-    description: "Lay back and enjoy the music",
-    imageUrl: "/placeholder.svg"
-  }
-];
+import { useFeaturedPlaylists } from '@/services/musicService';
+import { useToast } from '@/components/ui/use-toast';
 
 const Index = () => {
+  const { toast } = useToast();
+  const { data: playlists, isLoading, error } = useFeaturedPlaylists();
+
+  if (error) {
+    toast({
+      title: "Error",
+      description: "Failed to load playlists. Please try again later.",
+      variant: "destructive",
+    });
+  }
+
   return (
     <Layout>
       <div className="space-y-8">
         <section>
           <h2 className="text-2xl font-bold mb-4">Featured Playlists</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {featuredPlaylists.map((playlist) => (
-              <div
-                key={playlist.id}
-                className="bg-gray-900 p-4 rounded-lg hover:bg-gray-800 transition cursor-pointer"
-              >
-                <img
-                  src={playlist.imageUrl}
-                  alt={playlist.title}
-                  className="w-full aspect-square object-cover rounded-md mb-4"
-                />
-                <h3 className="font-semibold">{playlist.title}</h3>
-                <p className="text-sm text-gray-400">{playlist.description}</p>
-              </div>
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-gray-900 p-4 rounded-lg animate-pulse">
+                  <div className="w-full aspect-square bg-gray-800 rounded-md mb-4"></div>
+                  <div className="h-4 bg-gray-800 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-gray-800 rounded w-1/2"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {(playlists || []).slice(0, 6).map((playlist: any) => (
+                <div
+                  key={playlist.id}
+                  className="bg-gray-900 p-4 rounded-lg hover:bg-gray-800 transition cursor-pointer"
+                >
+                  <img
+                    src={playlist.picture_medium || '/placeholder.svg'}
+                    alt={playlist.title}
+                    className="w-full aspect-square object-cover rounded-md mb-4"
+                  />
+                  <h3 className="font-semibold">{playlist.title}</h3>
+                  <p className="text-sm text-gray-400">
+                    {playlist.nb_tracks} tracks
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         <section>
