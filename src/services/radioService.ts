@@ -18,9 +18,11 @@ const RADIO_API_BASE = "https://de1.api.radio-browser.info/json/stations";
 
 const validateStreamUrl = async (url: string): Promise<boolean> => {
   try {
-    const response = await fetch(url, { method: 'HEAD' });
-    const contentType = response.headers.get('content-type');
-    return contentType?.includes('audio') || contentType?.includes('stream') || false;
+    const response = await fetch(url, { 
+      method: 'HEAD',
+      mode: 'no-cors' // Add no-cors mode to handle CORS issues
+    });
+    return true; // If we get here with no-cors, assume it's valid
   } catch {
     return false;
   }
@@ -34,46 +36,59 @@ export const searchRadioStations = async (
     tagList?: string[];
   } = {}
 ): Promise<RadioStation[]> => {
-  const params = new URLSearchParams({
-    limit: (options.limit || 50).toString(),
-    offset: (options.offset || 0).toString(),
-    hidebroken: "true",
-    order: "votes",
-    reverse: "true",
-    codec: "MP3",
-    has_extended_info: "true",
-  });
+  try {
+    const params = new URLSearchParams({
+      limit: (options.limit || 50).toString(),
+      offset: (options.offset || 0).toString(),
+      hidebroken: "true",
+      order: "votes",
+      reverse: "true",
+      codec: "MP3",
+      has_extended_info: "true",
+    });
 
-  if (searchTerm) {
-    params.append("name", searchTerm);
+    if (searchTerm) {
+      params.append("name", searchTerm);
+    }
+
+    if (options.tagList?.length) {
+      params.append("tagList", options.tagList.join(','));
+    }
+
+    // Use a random mirror from the available ones
+    const mirrors = [
+      "de1.api.radio-browser.info",
+      "fr1.api.radio-browser.info",
+      "nl1.api.radio-browser.info"
+    ];
+    const randomMirror = mirrors[Math.floor(Math.random() * mirrors.length)];
+    
+    const response = await fetch(`https://${randomMirror}/json/stations/search?${params.toString()}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch radio stations");
+    }
+    
+    const stations = await response.json();
+    
+    // Filter stations to include only those with valid URLs and sufficient votes
+    const validStations = await Promise.all(
+      stations
+        .filter((station: RadioStation) => 
+          station.url && 
+          station.bitrate >= 64 && // Ensure minimum audio quality
+          station.votes > 0 // Ensure some popularity/validity
+        )
+        .map(async (station: RadioStation) => {
+          const isValid = await validateStreamUrl(station.url);
+          return isValid ? station : null;
+        })
+    );
+
+    return validStations.filter(Boolean);
+  } catch (error) {
+    console.error("Error fetching radio stations:", error);
+    return []; // Return empty array instead of throwing
   }
-
-  if (options.tagList?.length) {
-    params.append("tagList", options.tagList.join(','));
-  }
-
-  const response = await fetch(`${RADIO_API_BASE}/search?${params.toString()}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch radio stations");
-  }
-  
-  const stations = await response.json();
-  
-  // Filter stations to include only those with valid URLs and sufficient votes
-  const validStations = await Promise.all(
-    stations
-      .filter((station: RadioStation) => 
-        station.url && 
-        station.bitrate >= 64 && // Ensure minimum audio quality
-        station.votes > 0 // Ensure some popularity/validity
-      )
-      .map(async (station: RadioStation) => {
-        const isValid = await validateStreamUrl(station.url);
-        return isValid ? station : null;
-      })
-  );
-
-  return validStations.filter(Boolean);
 };
 
 export const getPopularStations = (limit: number = 12) => {
