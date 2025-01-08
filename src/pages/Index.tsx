@@ -38,8 +38,6 @@ const Index = () => {
   };
 
   const handlePlaylistSelect = (playlist: any) => {
-    // For demonstration, we'll just play the first track
-    // In a real app, you'd want to fetch the playlist's tracks first
     setCurrentTrack({
       title: playlist.title,
       artist: 'Various Artists',
@@ -51,11 +49,11 @@ const Index = () => {
 
   return (
     <Layout>
-      <div className="space-y-8">
+      <div className="space-y-6 md:space-y-8">
         <section>
-          <h2 className="text-2xl font-bold mb-4">Live Radio Stations</h2>
+          <h2 className="text-xl md:text-2xl font-bold mb-4">Live Radio Stations</h2>
           {radioLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="bg-gray-900 p-4 rounded-lg animate-pulse">
                   <div className="w-full aspect-square bg-gray-800 rounded-md mb-4"></div>
@@ -65,7 +63,7 @@ const Index = () => {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {(radioStations || []).slice(0, 6).map((station: any) => (
                 <div
                   key={station.id}
@@ -77,8 +75,8 @@ const Index = () => {
                     alt={station.name}
                     className="w-full aspect-square object-cover rounded-md mb-4"
                   />
-                  <h3 className="font-semibold">{station.name}</h3>
-                  <p className="text-sm text-gray-400">
+                  <h3 className="font-semibold truncate">{station.name}</h3>
+                  <p className="text-sm text-gray-400 truncate">
                     {station.country} • {station.tags.split(',')[0]}
                   </p>
                 </div>
@@ -88,9 +86,9 @@ const Index = () => {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold mb-4">Featured Music Playlists</h2>
+          <h2 className="text-xl md:text-2xl font-bold mb-4">Featured Music Playlists</h2>
           {playlistsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="bg-gray-900 p-4 rounded-lg animate-pulse">
                   <div className="w-full aspect-square bg-gray-800 rounded-md mb-4"></div>
@@ -100,7 +98,7 @@ const Index = () => {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {(playlists || []).slice(0, 6).map((playlist: any) => (
                 <div
                   key={playlist.id}
@@ -112,8 +110,8 @@ const Index = () => {
                     alt={playlist.title}
                     className="w-full aspect-square object-cover rounded-md mb-4"
                   />
-                  <h3 className="font-semibold">{playlist.title}</h3>
-                  <p className="text-sm text-gray-400">
+                  <h3 className="font-semibold truncate">{playlist.title}</h3>
+                  <p className="text-sm text-gray-400 truncate">
                     {playlist.nb_tracks} tracks
                   </p>
                 </div>

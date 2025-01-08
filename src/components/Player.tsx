@@ -37,22 +37,22 @@ const Player = () => {
   return (
     <>
       <audio ref={audioRef} />
-      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black to-gray-900 p-4">
-        <div className="flex items-center justify-between max-w-screen-xl mx-auto">
-          <div className="flex items-center space-x-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black to-gray-900 p-3 md:p-4">
+        <div className="flex flex-col md:flex-row items-center justify-between max-w-screen-xl mx-auto gap-3 md:gap-0">
+          <div className="flex items-center space-x-3 w-full md:w-auto">
             <img
               src={currentTrack.imageUrl || '/placeholder.svg'}
               alt="Album cover"
-              className="w-14 h-14 rounded-md"
+              className="w-12 h-12 md:w-14 md:h-14 rounded-md"
             />
             <div>
-              <h4 className="text-sm font-medium">{currentTrack.title}</h4>
-              <p className="text-xs text-gray-400">{currentTrack.artist}</p>
+              <h4 className="text-sm font-medium truncate max-w-[150px] md:max-w-none">{currentTrack.title}</h4>
+              <p className="text-xs text-gray-400 truncate max-w-[150px] md:max-w-none">{currentTrack.artist}</p>
             </div>
           </div>
           
-          <div className="flex flex-col items-center space-y-2 flex-1 px-8">
-            <div className="flex items-center space-x-6">
+          <div className="flex flex-col items-center space-y-2 w-full md:flex-1 md:px-8">
+            <div className="flex items-center space-x-4 md:space-x-6">
               <button className="text-gray-400 hover:text-white">
                 <SkipBack size={20} />
               </button>
@@ -78,7 +78,7 @@ const Player = () => {
             </div>
           </div>
           
-          <div className="flex items-center space-x-2 min-w-[150px]">
+          <div className="hidden md:flex items-center space-x-2 min-w-[150px]">
             <Volume2 size={20} className="text-gray-400" />
             <Slider
               defaultValue={[75]}
