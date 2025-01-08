@@ -1,6 +1,9 @@
-import { useState } from 'react';
-import { X, MessageSquare, Volume2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, MessageSquare, Volume2, Mic, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/hooks/use-toast';
+import { usePlayer } from '@/contexts/PlayerContext';
 import {
   Select,
   SelectContent,
@@ -11,6 +14,70 @@ import {
 
 const AIPanel = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [hasBluetoothPermission, setHasBluetoothPermission] = useState(false);
+  const { toast } = useToast();
+  const { isPlaying, togglePlay } = usePlayer();
+
+  // Check for Bluetooth availability and request permissions
+  const requestBluetoothPermission = async () => {
+    try {
+      // Request Bluetooth device access
+      const device = await navigator.bluetooth.requestDevice({
+        acceptAllDevices: true,
+        optionalServices: ['generic_access']
+      });
+      
+      setHasBluetoothPermission(true);
+      toast({
+        title: "Bluetooth Connected",
+        description: `Connected to ${device.name}`,
+      });
+    } catch (error) {
+      console.error('Bluetooth error:', error);
+      toast({
+        title: "Bluetooth Error",
+        description: "Could not connect to Bluetooth device",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle translation mode toggle
+  const handleTranslationMode = async (enabled: boolean) => {
+    if (enabled) {
+      if (!hasBluetoothPermission) {
+        await requestBluetoothPermission();
+      }
+      
+      if (isPlaying) {
+        togglePlay(); // Pause music if playing
+      }
+      
+      try {
+        // Request microphone permission
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        setIsTranslating(true);
+        toast({
+          title: "Translation Mode Activated",
+          description: "You can now speak to translate",
+        });
+      } catch (error) {
+        toast({
+          title: "Microphone Error",
+          description: "Please enable microphone access for translation",
+          variant: "destructive",
+        });
+      }
+    } else {
+      setIsTranslating(false);
+      toast({
+        title: "Translation Mode Deactivated",
+        description: "Returning to music mode",
+      });
+    }
+  };
 
   return (
     <>
@@ -30,9 +97,23 @@ const AIPanel = () => {
         </div>
 
         <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Languages className="w-5 h-5" />
+              <span className="text-sm">Translation Mode</span>
+            </div>
+            <Switch
+              checked={isTranslating}
+              onCheckedChange={handleTranslationMode}
+            />
+          </div>
+
           <div>
             <label className="block text-sm text-gray-400 mb-2">Translate to:</label>
-            <Select>
+            <Select
+              value={selectedLanguage}
+              onValueChange={setSelectedLanguage}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
@@ -42,28 +123,54 @@ const AIPanel = () => {
                 <SelectItem value="fr">French</SelectItem>
                 <SelectItem value="de">German</SelectItem>
                 <SelectItem value="zh">Chinese</SelectItem>
+                <SelectItem value="ja">Japanese</SelectItem>
+                <SelectItem value="ko">Korean</SelectItem>
+                <SelectItem value="ar">Arabic</SelectItem>
+                <SelectItem value="hi">Hindi</SelectItem>
+                <SelectItem value="pt">Portuguese</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="bg-gray-900 rounded-lg p-4">
-            <p className="text-sm mb-2">Current Lyrics:</p>
-            <p className="text-gray-400 text-sm italic">
-              No lyrics available for the current track
-            </p>
-          </div>
+          {isTranslating ? (
+            <div className="bg-gray-900 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm">Listening...</span>
+                <Mic className="w-5 h-5 text-primary animate-pulse" />
+              </div>
+              <p className="text-gray-400 text-sm">
+                Speak to translate. Your audio will be translated to {
+                  selectedLanguage === 'en' ? 'English' :
+                  selectedLanguage === 'es' ? 'Spanish' :
+                  selectedLanguage === 'fr' ? 'French' :
+                  selectedLanguage === 'de' ? 'German' :
+                  selectedLanguage === 'zh' ? 'Chinese' :
+                  selectedLanguage === 'ja' ? 'Japanese' :
+                  selectedLanguage === 'ko' ? 'Korean' :
+                  selectedLanguage === 'ar' ? 'Arabic' :
+                  selectedLanguage === 'hi' ? 'Hindi' :
+                  selectedLanguage === 'pt' ? 'Portuguese' : ''
+                }
+              </p>
+            </div>
+          ) : (
+            <div className="bg-gray-900 rounded-lg p-4">
+              <p className="text-gray-400 text-sm">
+                Enable translation mode to start translating in real-time
+              </p>
+            </div>
+          )}
 
-          <div className="bg-gray-900 rounded-lg p-4">
-            <p className="text-sm mb-2">Translation:</p>
-            <p className="text-gray-400 text-sm italic">
-              Select a language to see translation
-            </p>
-          </div>
-
-          <Button className="w-full" variant="secondary">
-            <Volume2 className="w-4 h-4 mr-2" />
-            Play Translation
-          </Button>
+          {isTranslating && (
+            <Button 
+              className="w-full" 
+              variant="secondary"
+              onClick={() => handleTranslationMode(false)}
+            >
+              <Volume2 className="w-4 h-4 mr-2" />
+              Stop Translation
+            </Button>
+          )}
         </div>
       </div>
     </>
