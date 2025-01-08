@@ -2,9 +2,11 @@ import Layout from '@/components/Layout';
 import { useFeaturedPlaylists } from '@/services/musicService';
 import { useRadioStations } from '@/services/radioService';
 import { useToast } from '@/hooks/use-toast';
+import { usePlayer } from '@/contexts/PlayerContext';
 
 const Index = () => {
   const { toast } = useToast();
+  const { setCurrentTrack } = usePlayer();
   const { data: playlists, isLoading: playlistsLoading, error: playlistsError } = useFeaturedPlaylists();
   const { data: radioStations, isLoading: radioLoading, error: radioError } = useRadioStations();
 
@@ -24,6 +26,28 @@ const Index = () => {
       variant: "destructive",
     });
   }
+
+  const handleRadioSelect = (station: any) => {
+    setCurrentTrack({
+      title: station.name,
+      artist: station.country,
+      imageUrl: station.favicon || '/placeholder.svg',
+      audioUrl: station.url,
+      type: 'radio'
+    });
+  };
+
+  const handlePlaylistSelect = (playlist: any) => {
+    // For demonstration, we'll just play the first track
+    // In a real app, you'd want to fetch the playlist's tracks first
+    setCurrentTrack({
+      title: playlist.title,
+      artist: 'Various Artists',
+      imageUrl: playlist.picture_medium || '/placeholder.svg',
+      audioUrl: '', // You'd need to fetch the actual track URL from the Deezer API
+      type: 'music'
+    });
+  };
 
   return (
     <Layout>
@@ -46,7 +70,7 @@ const Index = () => {
                 <div
                   key={station.id}
                   className="bg-gray-900 p-4 rounded-lg hover:bg-gray-800 transition cursor-pointer"
-                  onClick={() => window.open(station.url, '_blank')}
+                  onClick={() => handleRadioSelect(station)}
                 >
                   <img
                     src={station.favicon || '/placeholder.svg'}
@@ -81,6 +105,7 @@ const Index = () => {
                 <div
                   key={playlist.id}
                   className="bg-gray-900 p-4 rounded-lg hover:bg-gray-800 transition cursor-pointer"
+                  onClick={() => handlePlaylistSelect(playlist)}
                 >
                   <img
                     src={playlist.picture_medium || '/placeholder.svg'}
