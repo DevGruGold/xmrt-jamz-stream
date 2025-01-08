@@ -18,13 +18,33 @@ const RADIO_API_BASE = "https://de1.api.radio-browser.info/json/stations";
 
 const validateStreamUrl = async (url: string): Promise<boolean> => {
   try {
-    const response = await fetch(url, { 
-      method: 'HEAD',
-      mode: 'no-cors' // Add no-cors mode to handle CORS issues
+    // First try with audio element to check if stream is playable
+    const audio = new Audio();
+    audio.src = url;
+    
+    // Create a promise that resolves when the audio can play or fails
+    const canPlay = new Promise((resolve) => {
+      audio.addEventListener('canplay', () => resolve(true), { once: true });
+      audio.addEventListener('error', () => resolve(false), { once: true });
+      
+      // Set a timeout to prevent hanging
+      setTimeout(() => resolve(false), 3000);
     });
-    return true; // If we get here with no-cors, assume it's valid
+    
+    const result = await canPlay;
+    audio.remove(); // Cleanup
+    return result as boolean;
   } catch {
-    return false;
+    // Fallback to a simple fetch with no-cors mode
+    try {
+      await fetch(url, { 
+        method: 'HEAD',
+        mode: 'no-cors'
+      });
+      return true;
+    } catch {
+      return false;
+    }
   }
 };
 
