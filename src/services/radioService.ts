@@ -14,40 +14,141 @@ interface RadioStation {
   homepage: string;
 }
 
-const RADIO_API_BASE = "https://de1.api.radio-browser.info/json/stations";
-
-const validateStreamUrl = async (url: string): Promise<boolean> => {
-  try {
-    // First try with audio element to check if stream is playable
-    const audio = new Audio();
-    audio.src = url;
-    
-    // Create a promise that resolves when the audio can play or fails
-    const canPlay = new Promise((resolve) => {
-      audio.addEventListener('canplay', () => resolve(true), { once: true });
-      audio.addEventListener('error', () => resolve(false), { once: true });
-      
-      // Set a timeout to prevent hanging
-      setTimeout(() => resolve(false), 3000);
-    });
-    
-    const result = await canPlay;
-    audio.remove(); // Cleanup
-    return result as boolean;
-  } catch {
-    // Fallback to a simple fetch with no-cors mode
-    try {
-      await fetch(url, { 
-        method: 'HEAD',
-        mode: 'no-cors'
-      });
-      return true;
-    } catch {
-      return false;
-    }
+// Define 1.fm's top 10 stations
+const TOP_1FM_STATIONS: RadioStation[] = [
+  {
+    id: "1fm-top40",
+    name: "1.FM - Top 40",
+    url: "https://strm112.1.fm/top40_mobile_mp3",
+    favicon: "https://1.fm/assets/images/logo.png",
+    tags: "pop,top40,hits",
+    country: "Switzerland",
+    language: "English",
+    codec: "MP3",
+    bitrate: 128,
+    votes: 1000,
+    homepage: "https://1.fm"
+  },
+  {
+    id: "1fm-60s",
+    name: "1.FM - 60s Hits",
+    url: "https://strm112.1.fm/60s_70s_mobile_mp3",
+    favicon: "https://1.fm/assets/images/logo.png",
+    tags: "60s,oldies",
+    country: "Switzerland",
+    language: "English",
+    codec: "MP3",
+    bitrate: 128,
+    votes: 950,
+    homepage: "https://1.fm"
+  },
+  {
+    id: "1fm-blues",
+    name: "1.FM - Blues",
+    url: "https://strm112.1.fm/blues_mobile_mp3",
+    favicon: "https://1.fm/assets/images/logo.png",
+    tags: "blues",
+    country: "Switzerland",
+    language: "English",
+    codec: "MP3",
+    bitrate: 128,
+    votes: 900,
+    homepage: "https://1.fm"
+  },
+  {
+    id: "1fm-rock",
+    name: "1.FM - Rock Classics",
+    url: "https://strm112.1.fm/rockclassics_mobile_mp3",
+    favicon: "https://1.fm/assets/images/logo.png",
+    tags: "rock,classic",
+    country: "Switzerland",
+    language: "English",
+    codec: "MP3",
+    bitrate: 128,
+    votes: 850,
+    homepage: "https://1.fm"
+  },
+  {
+    id: "1fm-dance",
+    name: "1.FM - Dance One",
+    url: "https://strm112.1.fm/dance_mobile_mp3",
+    favicon: "https://1.fm/assets/images/logo.png",
+    tags: "dance,electronic",
+    country: "Switzerland",
+    language: "English",
+    codec: "MP3",
+    bitrate: 128,
+    votes: 800,
+    homepage: "https://1.fm"
+  },
+  {
+    id: "1fm-reggae",
+    name: "1.FM - Reggae Trade",
+    url: "https://strm112.1.fm/reggae_mobile_mp3",
+    favicon: "https://1.fm/assets/images/logo.png",
+    tags: "reggae",
+    country: "Switzerland",
+    language: "English",
+    codec: "MP3",
+    bitrate: 128,
+    votes: 750,
+    homepage: "https://1.fm"
+  },
+  {
+    id: "1fm-classical",
+    name: "1.FM - Classical",
+    url: "https://strm112.1.fm/classical_mobile_mp3",
+    favicon: "https://1.fm/assets/images/logo.png",
+    tags: "classical",
+    country: "Switzerland",
+    language: "English",
+    codec: "MP3",
+    bitrate: 128,
+    votes: 700,
+    homepage: "https://1.fm"
+  },
+  {
+    id: "1fm-chillout",
+    name: "1.FM - Chillout Lounge",
+    url: "https://strm112.1.fm/chilloutlounge_mobile_mp3",
+    favicon: "https://1.fm/assets/images/logo.png",
+    tags: "chillout,lounge",
+    country: "Switzerland",
+    language: "English",
+    codec: "MP3",
+    bitrate: 128,
+    votes: 650,
+    homepage: "https://1.fm"
+  },
+  {
+    id: "1fm-jazz",
+    name: "1.FM - Jazz",
+    url: "https://strm112.1.fm/jazz_mobile_mp3",
+    favicon: "https://1.fm/assets/images/logo.png",
+    tags: "jazz",
+    country: "Switzerland",
+    language: "English",
+    codec: "MP3",
+    bitrate: 128,
+    votes: 600,
+    homepage: "https://1.fm"
+  },
+  {
+    id: "1fm-country",
+    name: "1.FM - Country",
+    url: "https://strm112.1.fm/country_mobile_mp3",
+    favicon: "https://1.fm/assets/images/logo.png",
+    tags: "country",
+    country: "Switzerland",
+    language: "English",
+    codec: "MP3",
+    bitrate: 128,
+    votes: 550,
+    homepage: "https://1.fm"
   }
-};
+];
 
+// Simplified search function that only returns 1.fm stations
 export const searchRadioStations = async (
   searchTerm: string = "",
   options: {
@@ -56,59 +157,27 @@ export const searchRadioStations = async (
     tagList?: string[];
   } = {}
 ): Promise<RadioStation[]> => {
-  try {
-    const params = new URLSearchParams({
-      limit: (options.limit || 50).toString(),
-      offset: (options.offset || 0).toString(),
-      hidebroken: "true",
-      order: "votes",
-      reverse: "true",
-      codec: "MP3",
-      has_extended_info: "true",
-    });
-
-    if (searchTerm) {
-      params.append("name", searchTerm);
-    }
-
-    if (options.tagList?.length) {
-      params.append("tagList", options.tagList.join(','));
-    }
-
-    // Use a random mirror from the available ones
-    const mirrors = [
-      "de1.api.radio-browser.info",
-      "fr1.api.radio-browser.info",
-      "nl1.api.radio-browser.info"
-    ];
-    const randomMirror = mirrors[Math.floor(Math.random() * mirrors.length)];
-    
-    const response = await fetch(`https://${randomMirror}/json/stations/search?${params.toString()}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch radio stations");
-    }
-    
-    const stations = await response.json();
-    
-    // Filter stations to include only those with valid URLs and sufficient votes
-    const validStations = await Promise.all(
-      stations
-        .filter((station: RadioStation) => 
-          station.url && 
-          station.bitrate >= 64 && // Ensure minimum audio quality
-          station.votes > 0 // Ensure some popularity/validity
-        )
-        .map(async (station: RadioStation) => {
-          const isValid = await validateStreamUrl(station.url);
-          return isValid ? station : null;
-        })
+  let stations = [...TOP_1FM_STATIONS];
+  
+  // Filter by tags if provided
+  if (options.tagList?.length) {
+    stations = stations.filter(station => 
+      options.tagList?.some(tag => station.tags.toLowerCase().includes(tag.toLowerCase()))
     );
-
-    return validStations.filter(Boolean);
-  } catch (error) {
-    console.error("Error fetching radio stations:", error);
-    return []; // Return empty array instead of throwing
   }
+
+  // Filter by search term if provided
+  if (searchTerm) {
+    stations = stations.filter(station => 
+      station.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      station.tags.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
+
+  // Apply limit and offset
+  const start = options.offset || 0;
+  const end = options.limit ? start + options.limit : undefined;
+  return stations.slice(start, end);
 };
 
 export const getPopularStations = (limit: number = 12) => {
