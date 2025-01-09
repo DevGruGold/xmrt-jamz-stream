@@ -14,13 +14,12 @@ interface RadioStation {
   homepage: string;
 }
 
-// Define 1.fm's top 10 stations
 const TOP_1FM_STATIONS: RadioStation[] = [
   {
     id: "1fm-top40",
     name: "1.FM - Top 40",
     url: "https://strm112.1.fm/top40_mobile_mp3",
-    favicon: "https://1.fm/assets/images/logo.png",
+    favicon: "/placeholder.svg",
     tags: "pop,top40,hits",
     country: "Switzerland",
     language: "English",
@@ -33,7 +32,7 @@ const TOP_1FM_STATIONS: RadioStation[] = [
     id: "1fm-60s",
     name: "1.FM - 60s Hits",
     url: "https://strm112.1.fm/60s_70s_mobile_mp3",
-    favicon: "https://1.fm/assets/images/logo.png",
+    favicon: "/placeholder.svg",
     tags: "60s,oldies",
     country: "Switzerland",
     language: "English",
@@ -46,7 +45,7 @@ const TOP_1FM_STATIONS: RadioStation[] = [
     id: "1fm-blues",
     name: "1.FM - Blues",
     url: "https://strm112.1.fm/blues_mobile_mp3",
-    favicon: "https://1.fm/assets/images/logo.png",
+    favicon: "/placeholder.svg",
     tags: "blues",
     country: "Switzerland",
     language: "English",
@@ -59,7 +58,7 @@ const TOP_1FM_STATIONS: RadioStation[] = [
     id: "1fm-rock",
     name: "1.FM - Rock Classics",
     url: "https://strm112.1.fm/rockclassics_mobile_mp3",
-    favicon: "https://1.fm/assets/images/logo.png",
+    favicon: "/placeholder.svg",
     tags: "rock,classic",
     country: "Switzerland",
     language: "English",
@@ -72,7 +71,7 @@ const TOP_1FM_STATIONS: RadioStation[] = [
     id: "1fm-dance",
     name: "1.FM - Dance One",
     url: "https://strm112.1.fm/dance_mobile_mp3",
-    favicon: "https://1.fm/assets/images/logo.png",
+    favicon: "/placeholder.svg",
     tags: "dance,electronic",
     country: "Switzerland",
     language: "English",
@@ -80,75 +79,9 @@ const TOP_1FM_STATIONS: RadioStation[] = [
     bitrate: 128,
     votes: 800,
     homepage: "https://1.fm"
-  },
-  {
-    id: "1fm-reggae",
-    name: "1.FM - Reggae Trade",
-    url: "https://strm112.1.fm/reggae_mobile_mp3",
-    favicon: "https://1.fm/assets/images/logo.png",
-    tags: "reggae",
-    country: "Switzerland",
-    language: "English",
-    codec: "MP3",
-    bitrate: 128,
-    votes: 750,
-    homepage: "https://1.fm"
-  },
-  {
-    id: "1fm-classical",
-    name: "1.FM - Classical",
-    url: "https://strm112.1.fm/classical_mobile_mp3",
-    favicon: "https://1.fm/assets/images/logo.png",
-    tags: "classical",
-    country: "Switzerland",
-    language: "English",
-    codec: "MP3",
-    bitrate: 128,
-    votes: 700,
-    homepage: "https://1.fm"
-  },
-  {
-    id: "1fm-chillout",
-    name: "1.FM - Chillout Lounge",
-    url: "https://strm112.1.fm/chilloutlounge_mobile_mp3",
-    favicon: "https://1.fm/assets/images/logo.png",
-    tags: "chillout,lounge",
-    country: "Switzerland",
-    language: "English",
-    codec: "MP3",
-    bitrate: 128,
-    votes: 650,
-    homepage: "https://1.fm"
-  },
-  {
-    id: "1fm-jazz",
-    name: "1.FM - Jazz",
-    url: "https://strm112.1.fm/jazz_mobile_mp3",
-    favicon: "https://1.fm/assets/images/logo.png",
-    tags: "jazz",
-    country: "Switzerland",
-    language: "English",
-    codec: "MP3",
-    bitrate: 128,
-    votes: 600,
-    homepage: "https://1.fm"
-  },
-  {
-    id: "1fm-country",
-    name: "1.FM - Country",
-    url: "https://strm112.1.fm/country_mobile_mp3",
-    favicon: "https://1.fm/assets/images/logo.png",
-    tags: "country",
-    country: "Switzerland",
-    language: "English",
-    codec: "MP3",
-    bitrate: 128,
-    votes: 550,
-    homepage: "https://1.fm"
   }
 ];
 
-// Simplified search function that only returns 1.fm stations
 export const searchRadioStations = async (
   searchTerm: string = "",
   options: {

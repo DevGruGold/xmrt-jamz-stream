@@ -2,22 +2,30 @@ import { Pause, Play, SkipBack, SkipForward, Volume2 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { useEffect, useRef } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 const Player = () => {
   const { isPlaying, currentTrack, togglePlay } = usePlayer();
   const audioRef = useRef<HTMLAudioElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.play().catch(error => {
           console.error('Error playing audio:', error);
+          toast({
+            title: "Playback Error",
+            description: "Unable to play this station. Please try another one.",
+            variant: "destructive",
+          });
+          togglePlay();
         });
       } else {
         audioRef.current.pause();
       }
     }
-  }, [isPlaying]);
+  }, [isPlaying, toast, togglePlay]);
 
   useEffect(() => {
     if (audioRef.current && currentTrack) {
@@ -25,10 +33,16 @@ const Player = () => {
       if (isPlaying) {
         audioRef.current.play().catch(error => {
           console.error('Error playing audio:', error);
+          toast({
+            title: "Playback Error",
+            description: "Unable to play this station. Please try another one.",
+            variant: "destructive",
+          });
+          togglePlay();
         });
       }
     }
-  }, [currentTrack]);
+  }, [currentTrack, isPlaying, toast, togglePlay]);
 
   if (!currentTrack) {
     return null;
