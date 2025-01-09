@@ -38,7 +38,7 @@ const Index = () => {
       title: playlist.title,
       artist: 'Various Artists',
       imageUrl: playlist.picture_medium || '/placeholder.svg',
-      audioUrl: '', // You'd need to fetch the actual track URL from the Deezer API
+      audioUrl: '',
       type: 'music'
     });
   };
@@ -46,10 +46,9 @@ const Index = () => {
   const renderStationGrid = (stations: any[], loading: boolean) => {
     if (loading) {
       return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-gray-900 p-4 rounded-lg animate-pulse">
-              <div className="w-full aspect-square bg-gray-800 rounded-md mb-4"></div>
+            <div key={i} className="bg-gray-900 p-3 rounded-lg animate-pulse">
               <div className="h-4 bg-gray-800 rounded w-3/4 mb-2"></div>
               <div className="h-3 bg-gray-800 rounded w-1/2"></div>
             </div>
@@ -59,18 +58,13 @@ const Index = () => {
     }
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-2">
         {(stations || []).map((station: any) => (
           <div
             key={station.id}
-            className="bg-gray-900 p-4 rounded-lg hover:bg-gray-800 transition cursor-pointer"
+            className="bg-gray-900 p-3 rounded-lg hover:bg-gray-800 transition cursor-pointer"
             onClick={() => handleRadioSelect(station)}
           >
-            <img
-              src={station.favicon || '/placeholder.svg'}
-              alt={station.name}
-              className="w-full aspect-square object-cover rounded-md mb-4"
-            />
             <h3 className="font-semibold truncate">{station.name}</h3>
             <p className="text-sm text-gray-400 truncate">
               {station.country} • {station.tags.split(',')[0]}
@@ -86,11 +80,11 @@ const Index = () => {
 
   return (
     <Layout>
-      <div className="space-y-6 md:space-y-8">
+      <div className="space-y-4">
         <section>
-          <h2 className="text-xl md:text-2xl font-bold mb-4">Live Radio Stations</h2>
+          <h2 className="text-lg font-bold mb-3">Live Radio Stations</h2>
           <Tabs defaultValue="popular" className="w-full">
-            <TabsList className="mb-4">
+            <TabsList className="mb-3">
               <TabsTrigger value="popular">Popular</TabsTrigger>
               <TabsTrigger value="news">News</TabsTrigger>
               <TabsTrigger value="talk">Talk</TabsTrigger>
@@ -112,32 +106,26 @@ const Index = () => {
         </section>
 
         <section>
-          <h2 className="text-xl md:text-2xl font-bold mb-4">Featured Music Playlists</h2>
+          <h2 className="text-lg font-bold mb-3">Featured Music Playlists</h2>
           {playlistsLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-2">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-gray-900 p-4 rounded-lg animate-pulse">
-                  <div className="w-full aspect-square bg-gray-800 rounded-md mb-4"></div>
+                <div key={i} className="bg-gray-900 p-3 rounded-lg animate-pulse">
                   <div className="h-4 bg-gray-800 rounded w-3/4 mb-2"></div>
                   <div className="h-3 bg-gray-800 rounded w-1/2"></div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-2">
               {(playlists || []).slice(0, 6).map((playlist: any) => (
                 <div
                   key={playlist.id}
-                  className="bg-gray-900 p-4 rounded-lg hover:bg-gray-800 transition cursor-pointer"
+                  className="bg-gray-900 p-3 rounded-lg hover:bg-gray-800 transition cursor-pointer"
                   onClick={() => handlePlaylistSelect(playlist)}
                 >
-                  <img
-                    src={playlist.picture_medium || '/placeholder.svg'}
-                    alt={playlist.title}
-                    className="w-full aspect-square object-cover rounded-md mb-4"
-                  />
                   <h3 className="font-semibold truncate">{playlist.title}</h3>
-                  <p className="text-sm text-gray-400 truncate">
+                  <p className="text-sm text-gray-400">
                     {playlist.nb_tracks} tracks
                   </p>
                 </div>
