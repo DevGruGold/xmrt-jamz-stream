@@ -118,7 +118,7 @@ const Index = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-2">
-              {(playlists || []).slice(0, 6).map((playlist: any) => (
+              {(playlists || []).slice(0, 6).map((playlist) => (
                 <div
                   key={playlist.id}
                   className="bg-gray-900 p-3 rounded-lg hover:bg-gray-800 transition cursor-pointer"
