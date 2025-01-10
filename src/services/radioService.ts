@@ -31,7 +31,7 @@ const TOP_1FM_STATIONS: RadioStation[] = [
   {
     id: "1fm-alternative",
     name: "1.FM - Alternative Rock",
-    url: "https://strm112.1.fm/x_mobile_mp3",
+    url: "https://strm112.1.fm/atr_mobile_mp3",
     favicon: "/placeholder.svg",
     tags: "rock,alternative,indie",
     country: "United States",
@@ -57,7 +57,7 @@ const TOP_1FM_STATIONS: RadioStation[] = [
   {
     id: "1fm-hiphop",
     name: "1.FM - Urban Hip Hop",
-    url: "https://strm112.1.fm/jamz_mobile_mp3",
+    url: "https://strm112.1.fm/urban_mobile_mp3",
     favicon: "/placeholder.svg",
     tags: "hiphop,rap,urban",
     country: "United States",
@@ -70,7 +70,7 @@ const TOP_1FM_STATIONS: RadioStation[] = [
   {
     id: "1fm-dance",
     name: "1.FM - Dance One",
-    url: "https://strm112.1.fm/dance_mobile_mp3",
+    url: "https://strm112.1.fm/club_mobile_mp3",
     favicon: "/placeholder.svg",
     tags: "dance,electronic,edm",
     country: "United States",
