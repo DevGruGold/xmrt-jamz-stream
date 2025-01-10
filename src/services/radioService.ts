@@ -42,11 +42,11 @@ const TOP_1FM_STATIONS: RadioStation[] = [
     homepage: "https://1.fm"
   },
   {
-    id: "1fm-hiphop",
-    name: "1.FM - Urban Hip Hop",
-    url: "https://strm112.1.fm/urban_mobile_mp3",
+    id: "1fm-00s-hiphop",
+    name: "1.FM - 00's Hip Hop",
+    url: "https://strm112.1.fm/club_mobile_mp3",
     favicon: "/placeholder.svg",
-    tags: "hiphop,rap,urban",
+    tags: "hiphop,rap,00s",
     country: "United States",
     language: "English",
     codec: "MP3",
