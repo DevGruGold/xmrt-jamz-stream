@@ -42,19 +42,6 @@ const TOP_1FM_STATIONS: RadioStation[] = [
     homepage: "https://1.fm"
   },
   {
-    id: "1fm-country",
-    name: "1.FM - Country One",
-    url: "https://strm112.1.fm/country_mobile_mp3",
-    favicon: "/placeholder.svg",
-    tags: "country,americana",
-    country: "United States",
-    language: "English",
-    codec: "MP3",
-    bitrate: 128,
-    votes: 10000,
-    homepage: "https://1.fm"
-  },
-  {
     id: "1fm-hiphop",
     name: "1.FM - Urban Hip Hop",
     url: "https://strm112.1.fm/urban_mobile_mp3",
@@ -65,58 +52,6 @@ const TOP_1FM_STATIONS: RadioStation[] = [
     codec: "MP3",
     bitrate: 128,
     votes: 9500,
-    homepage: "https://1.fm"
-  },
-  {
-    id: "1fm-dance",
-    name: "1.FM - Dance One",
-    url: "https://strm112.1.fm/club_mobile_mp3",
-    favicon: "/placeholder.svg",
-    tags: "dance,electronic,edm",
-    country: "United States",
-    language: "English",
-    codec: "MP3",
-    bitrate: 128,
-    votes: 9000,
-    homepage: "https://1.fm"
-  },
-  {
-    id: "1fm-blues",
-    name: "1.FM - Blues",
-    url: "https://strm112.1.fm/blues_mobile_mp3",
-    favicon: "/placeholder.svg",
-    tags: "blues,jazz",
-    country: "United States",
-    language: "English",
-    codec: "MP3",
-    bitrate: 128,
-    votes: 8500,
-    homepage: "https://1.fm"
-  },
-  {
-    id: "1fm-classical",
-    name: "1.FM - Otto's Classical",
-    url: "https://strm112.1.fm/classical_mobile_mp3",
-    favicon: "/placeholder.svg",
-    tags: "classical,orchestral",
-    country: "United States",
-    language: "English",
-    codec: "MP3",
-    bitrate: 128,
-    votes: 8000,
-    homepage: "https://1.fm"
-  },
-  {
-    id: "1fm-reggae",
-    name: "1.FM - ReggaeTrade",
-    url: "https://strm112.1.fm/reggae_mobile_mp3",
-    favicon: "/placeholder.svg",
-    tags: "reggae,caribbean",
-    country: "United States",
-    language: "English",
-    codec: "MP3",
-    bitrate: 128,
-    votes: 7500,
     homepage: "https://1.fm"
   }
 ];
