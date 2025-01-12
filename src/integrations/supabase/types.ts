@@ -44,6 +44,33 @@ export type Database = {
           },
         ]
       }
+      anonymous_playlists: {
+        Row: {
+          created_at: string | null
+          device_id: string
+          id: string
+          last_played: string | null
+          name: string
+          tracks: Json
+        }
+        Insert: {
+          created_at?: string | null
+          device_id: string
+          id?: string
+          last_played?: string | null
+          name: string
+          tracks?: Json
+        }
+        Update: {
+          created_at?: string | null
+          device_id?: string
+          id?: string
+          last_played?: string | null
+          name?: string
+          tracks?: Json
+        }
+        Relationships: []
+      }
       audio_samples: {
         Row: {
           actual_label: string | null
@@ -494,6 +521,30 @@ export type Database = {
         }
         Relationships: []
       }
+      station_preferences: {
+        Row: {
+          device_id: string
+          id: string
+          last_played: string | null
+          play_count: number | null
+          station_id: string
+        }
+        Insert: {
+          device_id: string
+          id?: string
+          last_played?: string | null
+          play_count?: number | null
+          station_id: string
+        }
+        Update: {
+          device_id?: string
+          id?: string
+          last_played?: string | null
+          play_count?: number | null
+          station_id?: string
+        }
+        Relationships: []
+      }
       stripe_connect_accounts: {
         Row: {
           charges_enabled: boolean | null
@@ -586,6 +637,42 @@ export type Database = {
           token_name?: string
           token_symbol?: string
           total_supply?: number
+        }
+        Relationships: []
+      }
+      vendors: {
+        Row: {
+          business_name: string
+          contact_email: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_approved: boolean | null
+          social_links: Json | null
+          user_address: string
+          website_url: string | null
+        }
+        Insert: {
+          business_name: string
+          contact_email?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_approved?: boolean | null
+          social_links?: Json | null
+          user_address: string
+          website_url?: string | null
+        }
+        Update: {
+          business_name?: string
+          contact_email?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_approved?: boolean | null
+          social_links?: Json | null
+          user_address?: string
+          website_url?: string | null
         }
         Relationships: []
       }

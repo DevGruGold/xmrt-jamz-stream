@@ -1,4 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { getDeviceId } from "@/utils/deviceId";
 
 interface RadioStation {
   id: string;
@@ -105,19 +107,57 @@ export const useRadioStations = (searchTerm?: string, options = {}) => {
 };
 
 export const usePopularStations = (limit: number = 12) => {
+  const { data: preferences } = useStationPreferences();
+  
   return useQuery({
-    queryKey: ["popularStations", limit],
-    queryFn: () => getPopularStations(limit),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
+    queryKey: ['popularStations', limit, preferences],
+    queryFn: async () => {
+      const stations = await getPopularStations(limit);
+      
+      if (!preferences?.length) return stations;
+      
+      // Sort stations based on user preferences
+      return stations.sort((a, b) => {
+        const prefA = preferences.find(p => p.station_id === a.id);
+        const prefB = preferences.find(p => p.station_id === b.id);
+        
+        if (prefA && !prefB) return -1;
+        if (!prefA && prefB) return 1;
+        if (prefA && prefB) {
+          return prefB.play_count - prefA.play_count;
+        }
+        return 0;
+      });
+    },
   });
 };
 
-export const useStationsByTag = (tag: string, limit: number = 12) => {
+export const updateStationPreference = async (stationId: string) => {
+  const { error } = await supabase
+    .from('station_preferences')
+    .upsert({
+      device_id: getDeviceId(),
+      station_id: stationId,
+      last_played: new Date().toISOString(),
+    }, {
+      onConflict: 'device_id,station_id',
+    });
+
+  if (error) throw error;
+};
+
+export const useStationPreferences = () => {
   return useQuery({
-    queryKey: ["stationsByTag", tag, limit],
-    queryFn: () => getStationsByTag(tag, limit),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
+    queryKey: ['stationPreferences'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('station_preferences')
+        .select('*')
+        .eq('device_id', getDeviceId())
+        .order('play_count', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
   });
 };
