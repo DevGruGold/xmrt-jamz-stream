@@ -8,8 +8,9 @@ import { Button } from './ui/button';
 import { createWeb3Modal } from '@web3modal/wagmi/react';
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
 import { WagmiProvider } from 'wagmi';
-import { mainnet } from 'wagmi/chains';
+import { mainnet } from 'viem/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ethers } from 'ethers';
 
 // Add type declaration for window.ethereum
 declare global {
@@ -30,17 +31,16 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 };
 
-const chains = [mainnet];
-const config = defaultWagmiConfig({
-  chains,
+const wagmiConfig = defaultWagmiConfig({
   projectId,
   metadata,
+  chains: [mainnet],
+  enableWalletConnect: true,
 });
 
 createWeb3Modal({
-  wagmiConfig: config,
+  wagmiConfig,
   projectId,
-  chains,
   themeMode: 'dark'
 });
 
@@ -106,7 +106,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <div className="flex flex-col md:flex-row h-screen bg-player-background text-player-foreground">
           <Sidebar />
