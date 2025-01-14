@@ -6,7 +6,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PlayerProvider } from "./contexts/PlayerContext";
 import Index from "./pages/Index";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

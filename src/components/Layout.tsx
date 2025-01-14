@@ -5,24 +5,20 @@ import AIPanel from './AIPanel';
 import { Cast, Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
-import { createWeb3Modal } from '@web3modal/wagmi/react';
-import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
+import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react';
 import { WagmiProvider } from 'wagmi';
 import { mainnet } from 'viem/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ethers } from 'ethers';
 
-// Add type declaration for window.ethereum
 declare global {
   interface Window {
     ethereum?: any;
   }
 }
 
-// Replace with your wallet address from custom instructions
 const DONATION_ADDRESS = '0xda6b8FbB45616F6F3b96C033De705b2b8cb8Cb08';
 
-// Configure Web3Modal
 const projectId = '979e55ed482b2e91b0384995a82a53c6';
 const metadata = {
   name: 'XMRT Radio',
@@ -35,13 +31,14 @@ const wagmiConfig = defaultWagmiConfig({
   projectId,
   metadata,
   chains: [mainnet],
-  enableWalletConnect: true,
 });
 
-createWeb3Modal({
+// Create Web3Modal
+const modal = createWeb3Modal({
   wagmiConfig,
   projectId,
-  themeMode: 'dark'
+  themeMode: 'dark',
+  defaultChain: mainnet,
 });
 
 // Create a client for tanstack/react-query
@@ -81,7 +78,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       
       const tx = await signer.sendTransaction({
         to: DONATION_ADDRESS,
-        value: ethers.parseEther("0.01"), // Default donation of 0.01 ETH
+        value: ethers.parseEther("0.01"),
       });
 
       toast({
