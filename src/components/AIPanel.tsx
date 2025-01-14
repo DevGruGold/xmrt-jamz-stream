@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { usePlayer } from '@/contexts/PlayerContext';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Select,
   SelectContent,
@@ -17,13 +18,14 @@ const AIPanel = () => {
   const [isTranslating, setIsTranslating] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [hasBluetoothPermission, setHasBluetoothPermission] = useState(false);
+  const [transcribedText, setTranscribedText] = useState('');
+  const [translatedText, setTranslatedText] = useState('');
   const { toast } = useToast();
   const { isPlaying, togglePlay } = usePlayer();
 
   // Check for Bluetooth availability and request permissions
   const requestBluetoothPermission = async () => {
     try {
-      // Request Bluetooth device access
       const device = await navigator.bluetooth.requestDevice({
         acceptAllDevices: true,
         optionalServices: ['generic_access']
@@ -44,6 +46,32 @@ const AIPanel = () => {
     }
   };
 
+  const translateText = async (text: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('translate-audio', {
+        body: {
+          audioText: text,
+          targetLanguage: selectedLanguage
+        }
+      });
+
+      if (error) throw error;
+
+      setTranslatedText(data.translation);
+      toast({
+        title: "Translation Complete",
+        description: "Text has been translated successfully",
+      });
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast({
+        title: "Translation Failed",
+        description: "Could not translate the text",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Handle translation mode toggle
   const handleTranslationMode = async (enabled: boolean) => {
     if (enabled) {
@@ -52,13 +80,18 @@ const AIPanel = () => {
       }
       
       if (isPlaying) {
-        togglePlay(); // Pause music if playing
+        togglePlay();
       }
       
       try {
-        // Request microphone permission
-        await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         setIsTranslating(true);
+        
+        // Here you would typically set up the speech recognition
+        // For demo purposes, we'll use a mock transcription
+        setTranscribedText("Hello, how are you?");
+        await translateText("Hello, how are you?");
+        
         toast({
           title: "Translation Mode Activated",
           description: "You can now speak to translate",
@@ -72,6 +105,8 @@ const AIPanel = () => {
       }
     } else {
       setIsTranslating(false);
+      setTranscribedText('');
+      setTranslatedText('');
       toast({
         title: "Translation Mode Deactivated",
         description: "Returning to music mode",
@@ -132,32 +167,29 @@ const AIPanel = () => {
             </Select>
           </div>
 
-          {isTranslating ? (
-            <div className="bg-gray-900 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm">Listening...</span>
-                <Mic className="w-5 h-5 text-primary animate-pulse" />
+          {isTranslating && (
+            <div className="space-y-4">
+              <div className="bg-gray-900 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm">Original Text</span>
+                  <Mic className="w-5 h-5 text-primary animate-pulse" />
+                </div>
+                <p className="text-gray-400 text-sm">
+                  {transcribedText || "Speak to translate..."}
+                </p>
               </div>
-              <p className="text-gray-400 text-sm">
-                Speak to translate. Your audio will be translated to {
-                  selectedLanguage === 'en' ? 'English' :
-                  selectedLanguage === 'es' ? 'Spanish' :
-                  selectedLanguage === 'fr' ? 'French' :
-                  selectedLanguage === 'de' ? 'German' :
-                  selectedLanguage === 'zh' ? 'Chinese' :
-                  selectedLanguage === 'ja' ? 'Japanese' :
-                  selectedLanguage === 'ko' ? 'Korean' :
-                  selectedLanguage === 'ar' ? 'Arabic' :
-                  selectedLanguage === 'hi' ? 'Hindi' :
-                  selectedLanguage === 'pt' ? 'Portuguese' : ''
-                }
-              </p>
-            </div>
-          ) : (
-            <div className="bg-gray-900 rounded-lg p-4">
-              <p className="text-gray-400 text-sm">
-                Enable translation mode to start translating in real-time
-              </p>
+
+              {translatedText && (
+                <div className="bg-gray-900 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm">Translation</span>
+                    <Languages className="w-5 h-5 text-primary" />
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    {translatedText}
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
