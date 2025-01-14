@@ -106,6 +106,15 @@ export const useRadioStations = (searchTerm?: string, options = {}) => {
   });
 };
 
+export const useStationsByTag = (tag: string, limit: number = 12) => {
+  return useQuery({
+    queryKey: ['stationsByTag', tag, limit],
+    queryFn: () => getStationsByTag(tag, limit),
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
+  });
+};
+
 export const usePopularStations = (limit: number = 12) => {
   const { data: preferences } = useStationPreferences();
   
