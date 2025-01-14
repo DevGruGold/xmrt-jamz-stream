@@ -8,6 +8,9 @@ import { Button } from './ui/button';
 import { Web3Button, Web3Modal } from '@web3modal/react';
 import { useWeb3Modal } from '@web3modal/react';
 import { ethers } from 'ethers';
+import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
+import { configureChains, createConfig, WagmiConfig } from 'wagmi'
+import { mainnet } from 'wagmi/chains'
 
 // Add type declaration for window.ethereum
 declare global {
@@ -16,8 +19,19 @@ declare global {
   }
 }
 
-// Replace with your wallet address
-const DONATION_ADDRESS = '0x742d35Cc6634C0532925a3b844Bc454e4438f44e';
+// Replace with your wallet address from custom instructions
+const DONATION_ADDRESS = '0xda6b8FbB45616F6F3b96C033De705b2b8cb8Cb08';
+
+// Configure Web3Modal
+const projectId = '979e55ed482b2e91b0384995a82a53c6';
+const chains = [mainnet];
+const { publicClient } = configureChains(chains, [w3mProvider({ projectId })])
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors: w3mConnectors({ projectId, chains }),
+  publicClient
+})
+const ethereumClient = new EthereumClient(wagmiConfig, chains)
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
@@ -80,39 +94,45 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <Web3Modal projectId="YOUR_PROJECT_ID" themeMode="dark" />
-      <div className="flex flex-col md:flex-row h-screen bg-player-background text-player-foreground">
-        <Sidebar />
-        <main className="flex-1 overflow-auto p-3 pb-20">
-          <div className="mb-4 flex justify-between items-center">
-            <div className="flex-1 text-center">
-              <h1 className="text-xl font-bold">XMRT Radio</h1>
-              <p className="text-sm text-gray-400">Your gateway to global radio and music</p>
+      <WagmiConfig config={wagmiConfig}>
+        <div className="flex flex-col md:flex-row h-screen bg-player-background text-player-foreground">
+          <Sidebar />
+          <main className="flex-1 overflow-auto p-3 pb-20">
+            <div className="mb-4 flex justify-between items-center">
+              <div className="flex-1 text-center">
+                <h1 className="text-xl font-bold">XMRT Radio</h1>
+                <p className="text-sm text-gray-400">Your gateway to global radio and music</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                  onClick={handleDonate}
+                >
+                  <Heart size={16} className="text-red-500" />
+                  Donate
+                </Button>
+                <button
+                  onClick={handleCast}
+                  className="p-2 hover:bg-gray-800 rounded-full transition-colors"
+                  title="Cast to device"
+                >
+                  <Cast size={20} />
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-                onClick={handleDonate}
-              >
-                <Heart size={16} className="text-red-500" />
-                Donate
-              </Button>
-              <button
-                onClick={handleCast}
-                className="p-2 hover:bg-gray-800 rounded-full transition-colors"
-                title="Cast to device"
-              >
-                <Cast size={20} />
-              </button>
-            </div>
-          </div>
-          {children}
-        </main>
-        <AIPanel />
-        <Player />
-      </div>
+            {children}
+          </main>
+          <AIPanel />
+          <Player />
+        </div>
+      </WagmiConfig>
+      <Web3Modal
+        projectId={projectId}
+        ethereumClient={ethereumClient}
+        themeMode="dark"
+      />
     </>
   );
 };
