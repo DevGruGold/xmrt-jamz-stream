@@ -9,6 +9,13 @@ import { Web3Button, Web3Modal } from '@web3modal/react';
 import { useWeb3Modal } from '@web3modal/react';
 import { ethers } from 'ethers';
 
+// Add type declaration for window.ethereum
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
+
 // Replace with your wallet address
 const DONATION_ADDRESS = '0x742d35Cc6634C0532925a3b844Bc454e4438f44e';
 
@@ -32,6 +39,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   const handleDonate = async () => {
+    if (!window.ethereum) {
+      toast({
+        title: "Error",
+        description: "Please install a Web3 wallet like MetaMask",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();

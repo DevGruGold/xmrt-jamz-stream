@@ -23,7 +23,13 @@ export const useUserPlaylists = () => {
         .eq('device_id', getDeviceId());
       
       if (error) throw error;
-      return data as Playlist[];
+      
+      // Properly type and transform the data
+      return (data as any[]).map(playlist => ({
+        id: playlist.id,
+        name: playlist.name,
+        tracks: Array.isArray(playlist.tracks) ? playlist.tracks : []
+      })) as Playlist[];
     },
   });
 };
@@ -69,10 +75,12 @@ export const useAddToPlaylist = () => {
         .eq('id', playlistId)
         .single();
 
+      const tracks = Array.isArray(playlist?.tracks) ? playlist.tracks : [];
+
       const { error } = await supabase
         .from('anonymous_playlists')
         .update({
-          tracks: [...(playlist?.tracks || []), track],
+          tracks: [...tracks, track],
           last_played: new Date().toISOString(),
         })
         .eq('id', playlistId);
