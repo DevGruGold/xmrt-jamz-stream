@@ -30,8 +30,9 @@ const metadata = {
 // Create wagmi config
 const config = createConfig({
   chains: [mainnet],
-  projectId,
-  metadata,
+  transports: {
+    [mainnet.id]: window.ethereum ? window.ethereum : undefined
+  }
 });
 
 // Create Web3Modal
@@ -40,6 +41,7 @@ const modal = createWeb3Modal({
   projectId,
   themeMode: 'dark',
   defaultChain: mainnet,
+  metadata,
 });
 
 // Create a client for tanstack/react-query
