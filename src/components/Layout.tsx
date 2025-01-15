@@ -5,8 +5,8 @@ import AIPanel from './AIPanel';
 import { Cast, Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
-import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react';
-import { WagmiProvider } from 'wagmi';
+import { createWeb3Modal } from '@web3modal/wagmi/react';
+import { WagmiProvider, createConfig } from 'wagmi';
 import { mainnet } from 'viem/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ethers } from 'ethers';
@@ -27,15 +27,16 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 };
 
-const wagmiConfig = defaultWagmiConfig({
+// Create wagmi config
+const config = createConfig({
+  chains: [mainnet],
   projectId,
   metadata,
-  chains: [mainnet],
 });
 
 // Create Web3Modal
 const modal = createWeb3Modal({
-  wagmiConfig,
+  wagmiConfig: config,
   projectId,
   themeMode: 'dark',
   defaultChain: mainnet,
@@ -103,7 +104,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <WagmiProvider config={wagmiConfig}>
+    <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <div className="flex flex-col md:flex-row h-screen bg-player-background text-player-foreground">
           <Sidebar />
