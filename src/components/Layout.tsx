@@ -5,7 +5,6 @@ import AIPanel from './AIPanel';
 import { Cast, Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
-import { createWeb3Modal } from '@web3modal/wagmi';
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { mainnet } from 'viem/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -13,13 +12,8 @@ import { ethers } from 'ethers';
 
 const DONATION_ADDRESS = '0xda6b8FbB45616F6F3b96C033De705b2b8cb8Cb08';
 
-const projectId = '979e55ed482b2e91b0384995a82a53c6';
-const metadata = {
-  name: 'XMRT Radio',
-  description: 'Your gateway to global radio and music',
-  url: 'https://xmrt.radio',
-  icons: ['https://avatars.githubusercontent.com/u/37784886']
-};
+// Create a client for tanstack/react-query
+const queryClient = new QueryClient();
 
 // Create wagmi config with only HTTP transport
 const config = createConfig({
@@ -28,18 +22,6 @@ const config = createConfig({
     [mainnet.id]: http()
   }
 });
-
-// Create Web3Modal
-createWeb3Modal({
-  wagmiConfig: config,
-  projectId,
-  themeMode: 'dark',
-  defaultChain: mainnet,
-  metadata,
-});
-
-// Create a client for tanstack/react-query
-const queryClient = new QueryClient();
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
