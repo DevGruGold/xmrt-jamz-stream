@@ -6,7 +6,7 @@ import { Cast, Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
 import { createWeb3Modal } from '@web3modal/wagmi/react';
-import { WagmiProvider, createConfig } from 'wagmi';
+import { WagmiProvider, createConfig, http } from 'wagmi';
 import { mainnet } from 'viem/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ethers } from 'ethers';
@@ -31,12 +31,12 @@ const metadata = {
 const config = createConfig({
   chains: [mainnet],
   transports: {
-    [mainnet.id]: window.ethereum ? window.ethereum : undefined
+    [mainnet.id]: http()
   }
 });
 
 // Create Web3Modal
-const modal = createWeb3Modal({
+createWeb3Modal({
   wagmiConfig: config,
   projectId,
   themeMode: 'dark',
