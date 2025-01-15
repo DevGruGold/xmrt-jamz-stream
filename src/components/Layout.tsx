@@ -11,12 +11,13 @@ import { mainnet } from 'viem/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ethers } from 'ethers';
 
-interface CustomWindow extends Window {
-  ethereum?: ethers.Eip1193Provider;
-}
+// Correctly type the ethereum property without recursive references
+type EthereumProvider = ethers.Eip1193Provider;
 
 declare global {
-  interface Window extends CustomWindow {}
+  interface Window {
+    ethereum?: EthereumProvider;
+  }
 }
 
 const DONATION_ADDRESS = '0xda6b8FbB45616F6F3b96C033De705b2b8cb8Cb08';
@@ -29,7 +30,7 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 };
 
-// Create wagmi config
+// Create wagmi config with simplified transport
 const config = createConfig({
   chains: [mainnet],
   transports: {
