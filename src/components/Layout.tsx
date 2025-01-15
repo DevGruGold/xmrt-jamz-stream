@@ -21,7 +21,7 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 };
 
-// Create wagmi config with simplified transport
+// Create wagmi config with only HTTP transport
 const config = createConfig({
   chains: [mainnet],
   transports: {
