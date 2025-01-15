@@ -11,10 +11,12 @@ import { mainnet } from 'viem/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ethers } from 'ethers';
 
+interface CustomWindow extends Window {
+  ethereum?: ethers.Eip1193Provider;
+}
+
 declare global {
-  interface Window {
-    ethereum?: any;
-  }
+  interface Window extends CustomWindow {}
 }
 
 const DONATION_ADDRESS = '0xda6b8FbB45616F6F3b96C033De705b2b8cb8Cb08';
